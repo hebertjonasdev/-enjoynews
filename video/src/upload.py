@@ -291,10 +291,22 @@ async def upload_to_platforms(
     return results
 
 
-if __name__ == "__main__":
-    # Helper to generate YouTube auth URL
+def main():
+    """CLI for uploading videos."""
+    import argparse
     import sys
-    if len(sys.argv) > 1 and sys.argv[1] == "youtube-auth":
+    from pathlib import Path
+
+    parser = argparse.ArgumentParser(description="Upload video to platforms")
+    parser.add_argument("--file", required=True, help="Path to video file")
+    parser.add_argument("--title", required=True, help="Video title")
+    parser.add_argument("--description", default="", help="Video description")
+    parser.add_argument("--shorts", action="store_true", help="Upload to YouTube Shorts")
+    parser.add_argument("--tiktok", action="store_true", help="Upload to TikTok")
+    parser.add_argument("--youtube-auth", action="store_true", help="Generate YouTube auth URL")
+    args = parser.parse_args()
+
+    if args.youtube_auth:
         from dotenv import load_dotenv
         load_dotenv()
         config = VideoConfig(
@@ -303,3 +315,37 @@ if __name__ == "__main__":
         )
         print("Visit this URL to authorize:")
         print(get_youtube_auth_url(config))
+        return
+
+    if not args.shorts and not args.tiktok:
+        print("Specify --shorts and/or --tiktok")
+        return
+
+    # Load config
+    config = VideoConfig(
+        youtube_client_id=os.getenv("YOUTUBE_CLIENT_ID"),
+        youtube_client_secret=os.getenv("YOUTUBE_CLIENT_SECRET"),
+        youtube_refresh_token=os.getenv("YOUTUBE_REFRESH_TOKEN"),
+        tiktok_client_key=os.getenv("TIKTOK_CLIENT_KEY"),
+        tiktok_client_secret=os.getenv("TIKTOK_CLIENT_SECRET"),
+        tiktok_access_token=os.getenv("TIKTOK_ACCESS_TOKEN"),
+    )
+
+    video_path = Path(args.file)
+    if not video_path.exists():
+        print(f"File not found: {video_path}")
+        return
+
+    # Run uploads
+    import asyncio
+    results = asyncio.run(upload_to_platforms(video_path, args.title, args.description, config))
+
+    for result in results:
+        if result.success:
+            print(f"✓ {result.platform}: {result.url}")
+        else:
+            print(f"✗ {result.platform}: {result.error}")
+
+
+if __name__ == "__main__":
+    main()

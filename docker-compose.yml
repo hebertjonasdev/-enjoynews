@@ -22,18 +22,35 @@ services:
       context: ./collector
       dockerfile: Dockerfile
     environment:
-      - OLLAMA_HOST=${OLLAMA_HOST:-http://ollama:11434}
+      # LLM Providers (prioridade: Groq > Together > HF > Ollama)
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - GROQ_MODEL=${GROQ_MODEL:-llama-3.1-70b-versatile}
+      - TOGETHER_API_KEY=${TOGETHER_API_KEY:-}
+      - TOGETHER_MODEL=${TOGETHER_MODEL:-meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo}
       - HF_API_TOKEN=${HF_API_TOKEN:-}
+      - HF_MODEL=${HF_MODEL:-meta-llama/Meta-Llama-3.1-8B-Instruct}
+      - OLLAMA_HOST=${OLLAMA_HOST:-http://ollama:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.1:8b}
+      # News APIs
       - NEWSAPI_KEY=${NEWSAPI_KEY:-}
       - GNEWS_KEY=${GNEWS_KEY:-}
-      - NITTER_INSTANCES=${NITTER_INSTANCES:-https://nitter.net,https://nitter.1d4.us,https://nitter.kavin.rocks}
+      - CURRENTS_KEY=${CURRENTS_KEY:-}
+      - MEDIASTACK_KEY=${MEDIASTACK_KEY:-}
+      - WORLDNEWS_KEY=${WORLDNEWS_KEY:-}
+      - GUARDIAN_KEY=${GUARDIAN_KEY:-}
+      # Enrichment APIs
+      - BRASIL_API_KEY=${BRASIL_API_KEY:-}
+      - WORLDBANK_KEY=${WORLDBANK_KEY:-}
+      - ALPHAVANTAGE_KEY=${ALPHAVANTAGE_KEY:-}
+      - COINGECKO_KEY=${COINGECKO_KEY:-}
+      - OPENWEATHER_KEY=${OPENWEATHER_KEY:-}
+      - RESTCOUNTRIES_KEY=${RESTCOUNTRIES_KEY:-}
+      # Social
+      - NITTER_INSTANCES=${NITTER_INSTANCES:-https://nitter.net,https://nitter.1d4.us,https://nitter.kavin.rocks,https://nitter.catsarch.com,https://nitter.privacydev.net}
     volumes:
       - ./collector/src:/app/src:ro
       - ./blog/src/content/posts:/output/posts
       - ./shared:/app/shared:ro
-    depends_on:
-      ollama:
-        condition: service_healthy
     profiles:
       - collector
     command: python -m src.pipeline --output /output/posts --once

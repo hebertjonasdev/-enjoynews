@@ -25,7 +25,9 @@ dependencies = [
     "pydantic>=2.7.0",
     "pydantic-settings>=2.3.0",
 
-    # LLM clients
+    # LLM clients (priority: Groq > Together > HF > Ollama)
+    "groq>=0.7.0",
+    "openai>=1.30.0",  # Used for Together AI (OpenAI-compatible)
     "ollama>=0.3.0",
     "huggingface-hub>=0.23.0",
 
