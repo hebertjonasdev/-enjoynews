@@ -8,8 +8,9 @@ Portal de notícias automatizado — coleta, resume, publica no blog e gera víd
 
 ## 🎯 Funcionalidades
 
-- **Coleta 2x/dia (07h/18h BRT):** RSS (G1, BBC, NYT, Folha, UOL, Estadão, Reuters, AP, El País, Le Monde, DW, + LatAm), NewsAPI/GNews free, Nitter (X/Twitter)
-- **Resumo jornalístico:** Estilo G1/BBC/NYT via LLM local/remoto (llama3.1:8b, qwen2.5:7b)
+- **Coleta 2x/dia (07h/18h BRT):** RSS (G1, BBC, NYT, Folha, UOL, Estadão, Reuters, AP, El País, Le Monde, DW, + 20+ LatAm), NewsAPI/GNews/Currents/WorldNews/Guardian free, Nitter (X/Twitter), Sitemaps
+- **Resumo jornalístico:** Estilo G1/BBC/NYT via LLM (Groq Llama 3.1 70B primário → Together AI → HF → Ollama fallback)
+- **Enriquecimento automático:** Brasil API (CNPJ/CEP/IBGE), World Bank (macro), Alpha Vantage (ações), CoinGecko (crypto), OpenWeather (clima), REST Countries (metadados)
 - **Blog estático:** Astro + Tailwind + MDX — design editorial (laranja/bege/marrom), SEO, RSS, sitemap
 - **Vídeo diário (08h BRT):** Roteiro 40s → TTS (edge-tts) + Stock footage (Pexels/Pixabay) → ffmpeg → YouTube Shorts + TikTok
 - **Zero custo marginal:** APIs gratuitas, LLM self-hosted/grátis, hospedagem Vercel/GitHub Actions free tier
@@ -55,6 +56,9 @@ git push -u origin main
 ```bash
 make install-secrets
 # Segue o guia impresso no terminal
+# OBRIGATÓRIOS: GROQ_API_KEY, PEXELS_KEY, VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+# OBRIGATÓRIOS (vídeo): YOUTUBE_CLIENT_ID, YOUTUBE_CLIENT_SECRET, YOUTUBE_REFRESH_TOKEN, TIKTOK_CLIENT_KEY, TIKTOK_CLIENT_SECRET, TIKTOK_ACCESS_TOKEN
+# OPCIONAIS (recomendados): NEWSAPI_KEY, GNEWS_KEY, CURRENTS_KEY, WORLDNEWS_KEY, GUARDIAN_KEY, TOGETHER_API_KEY, ALPHAVANTAGE_KEY, OPENWEATHER_KEY, HF_API_TOKEN, OLLAMA_HOST
 ```
 
 ### 3. Deploy automático
@@ -62,10 +66,24 @@ make install-secrets
 - **Coleta:** Cron 07h/18h BRT → Gera MDX → Commit → Deploy
 - **Vídeo:** Cron 08h BRT → Gera MP4 → Upload YouTube Shorts + TikTok
 
-### 4. Domínio próprio (opcional)
+### 4. Verificar funcionamento
+```bash
+# Após push, vá em: https://github.com/SEU_USUARIO/enjoynews/actions
+# Verifique se "Collect & Publish" e "Generate & Upload Video" rodam sem erro
+# Blog: https://enjoynews.vercel.app (ou seu domínio)
+```
+
+### 5. Domínio próprio (opcional)
 - Compre `enjoynews.com.br` no Registro.br (R$ 40/ano)
 - No Vercel: Project → Settings → Domains → Add `enjoynews.com.br`
 - No Registro.br: CNAME `cname.vercel-dns.com`
+
+### 6. Teste local da coleta (opcional)
+```bash
+# Rode uma vez localmente para testar
+make collector
+# Verifique blog/src/content/posts/ para MDX gerados
+```
 
 ---
 
@@ -87,16 +105,23 @@ enjoynews/
 
 ## 🔑 APIs Gratuitas Necessárias
 
-| Serviço | Free Tier | Link |
-|---------|-----------|------|
-| **Pexels** | 200 req/hora, 20k/mês | https://www.pexels.com/api/ |
-| **Pixabay** | 500 req/hora | https://pixabay.com/api/docs/ |
-| **NewsAPI** | 100 req/dia | https://newsapi.org/ |
-| **GNews** | 100 req/dia | https://gnews.io/ |
-| **YouTube Data API** | 10k unidades/dia | https://console.cloud.google.com/ |
-| **TikTok for Developers** | Video upload | https://developers.tiktok.com/ |
-| **Hugging Face Inference** | 30k req/mês | https://huggingface.co/settings/tokens |
-| **Ollama remoto** | Vários hosts grátis | https://github.com/ollama/ollama |
+| Serviço | Free Tier | Link | Prioridade |
+|---------|-----------|------|------------|
+| **Groq Cloud** | 14k req/dia, Llama 3.1 70B | https://console.groq.com/ | 🔴 **Obrigatório (LLM primário)** |
+| **Pexels** | 200 req/hora, 20k/mês | https://www.pexels.com/api/ | 🔴 **Obrigatório (vídeo)** |
+| **Together AI** | $1 crédito grátis | https://api.together.xyz/ | 🟡 Fallback LLM |
+| **NewsAPI** | 100 req/dia | https://newsapi.org/ | 🟡 Mais fontes |
+| **GNews** | 100 req/dia | https://gnews.io/ | 🟡 Mais fontes |
+| **Currents API** | 100 req/dia | https://currentsapi.services/ | 🟡 Mais fontes |
+| **World News API** | 100 req/dia | https://worldnewsapi.com/ | 🟡 Mais fontes |
+| **The Guardian API** | 500 req/dia | https://open-platform.theguardian.com/ | 🟡 UK/Global |
+| **YouTube Data API** | 10k unidades/dia | https://console.cloud.google.com/ | 🔴 **Obrigatório (Shorts)** |
+| **TikTok for Developers** | Video upload | https://developers.tiktok.com/ | 🔴 **Obrigatório (TikTok)** |
+| **Alpha Vantage** | 25 req/dia | https://www.alphavantage.co/ | 🟢 Enriquecimento (ações) |
+| **OpenWeatherMap** | 1000 req/dia | https://openweathermap.org/api | 🟢 Enriquecimento (clima) |
+| **CoinGecko** | Generoso | https://www.coingecko.com/en/api | 🟢 Enriquecimento (crypto) |
+| **Hugging Face Inference** | 30k req/mês | https://huggingface.co/settings/tokens | 🟢 Fallback LLM |
+| **Ollama remoto** | Vários hosts grátis | https://github.com/ollama/ollama | 🟢 Último fallback |
 
 ---
 
