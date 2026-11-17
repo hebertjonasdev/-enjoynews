@@ -1,0 +1,59 @@
+---
+import Badge from '../ui/Badge.astro';
+import Button from '../ui/Button.astro';
+---
+
+<header class="border-b border-enjoy-line bg-enjoy-paper/95 backdrop-blur-sm sticky top-0 z-50">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16 lg:h-14">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2 shrink-0" aria-label="EnjoyNews - Início">
+        <span class="font-display text-enjoy-orange text-xl lg:text-2xl font-medium tracking-tight">
+          EnjoyNews
+        </span>
+        <Badge variant="orange" size="sm" class="hidden sm:inline-flex">
+          Beta
+        </Badge>
+      </a>
+
+      <!-- Navigation -->
+      <nav class="hidden md:flex items-center gap-1" aria-label="Navegação principal">
+        <a href="/brasil" class="px-3 py-2 text-sm font-medium text-enjoy-inkLight hover:text-enjoy-orange hover:bg-enjoy-orangePale rounded-lg transition-colors">
+          Brasil
+        </a>
+        <a href="/mundo" class="px-3 py-2 text-sm font-medium text-enjoy-inkLight hover:text-enjoy-orange hover:bg-enjoy-orangePale rounded-lg transition-colors">
+          Mundo
+        </a>
+        <a href="/economia" class="px-3 py-2 text-sm font-medium text-enjoy-inkLight hover:text-enjoy-orange hover:bg-enjoy-orangePale rounded-lg transition-colors">
+          Economia
+        </a>
+        <a href="/tecnologia" class="px-3 py-2 text-sm font-medium text-enjoy-inkLight hover:text-enjoy-orange hover:bg-enjoy-orangePale rounded-lg transition-colors">
+          Tech
+        </a>
+        <a href="/latino-america" class="px-3 py-2 text-sm font-medium text-enjoy-inkLight hover:text-enjoy-orange hover:bg-enjoy-orangePale rounded-lg transition-colors">
+          LatAm
+        </a>
+        <a href="/esportes" class="px-3 py-2 text-sm font-medium text-enjoy-inkLight hover:text-enjoy-orange hover:bg-enjoy-orangePale rounded-lg transition-colors">
+          Esportes
+        </a>
+        <a href="/cultura" class="px-3 py-2 text-sm font-medium text-enjoy-inkLight hover:text-enjoy-orange hover:bg-enjoy-orangePale rounded-lg transition-colors">
+          Cultura
+        </a>
+        <a href="/video" class="px-3 py-2 text-sm font-medium text-enjoy-inkLight hover:text-enjoy-orange hover:bg-enjoy-orangePale rounded-lg transition-colors flex items-center gap-1">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          Vídeo
+        </a>
+      </nav>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-3">
+        <Button variant="ghost" size="sm" href="/newsletter" class="hidden sm:inline-flex">
+          Newsletter
+        </Button>
+        <Button variant="primary" size="sm" href="/sobre" class="hidden lg:inline-flex">
+          Sobre
+        </Button>
+      </div>
+    </div>
+  </div>
+</header>

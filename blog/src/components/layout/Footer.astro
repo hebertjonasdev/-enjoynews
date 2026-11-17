@@ -1,0 +1,83 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-enjoy-ink text-enjoy-beigeLight py-12 lg:py-16">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+      <!-- Brand -->
+      <div class="lg:col-span-1">
+        <a href="/" class="font-display text-enjoy-orange text-2xl font-medium tracking-tight">
+          EnjoyNews
+        </a>
+        <p class="mt-4 text-sm text-enjoy-brownLight leading-relaxed max-w-xs">
+          Jornalismo automatizado com curadoria editorial. Notícias do Brasil, mundo e Latino-América
+          resumidas com rigor e elegância.
+        </p>
+        <div class="mt-6 flex gap-4">
+          <a href="https://youtube.com/@enjoynews" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors" aria-label="YouTube" target="_blank" rel="noopener">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 7.674 0 12 0 12s0 4.326.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 16.326 24 12 24 12s0-4.326-.502-5.814zM9.545 15.568V8.432L15.818 12 9.545 15.568z"/></svg>
+          </a>
+          <a href="https://tiktok.com/@enjoynews" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors" aria-label="TikTok" target="_blank" rel="noopener">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.545 11.261v6.284c0 .61.784.902 1.169.63l4.688-3.635c.455-.354.455-1.072 0-1.426L13.714 10.63c-.384-.271-1.169.021-1.169.631zm-3.456-2.144c0 3.012 2.627 4.867 5.003 4.973V7.158c-2.376-.106-5.003 1.749-5.003 4.959zm9.544-.719c-.08-4.127-3.873-6.932-7.485-6.644v14.68c3.774-.279 7.168-2.956 7.485-6.843v-1.193z"/></svg>
+          </a>
+          <a href="/rss.xml" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors" aria-label="RSS Feed">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v12zm-2 0c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H8c-1.1 0-2-.9-2-2v-12zm0-2v8h8v-8H4z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Sections -->
+      <nav aria-label="Seções">
+        <h4 class="font-semibold text-enjoy-paper mb-4">Seções</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="/brasil" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors">Brasil</a></li>
+          <li><a href="/mundo" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors">Mundo</a></li>
+          <li><a href="/economia" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors">Economia</a></li>
+          <li><a href="/tecnologia" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors">Tecnologia</a></li>
+          <li><a href="/latino-america" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors">Latino-América</a></li>
+          <li><a href="/esportes" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors">Esportes</a></li>
+          <li><a href="/cultura" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors">Cultura</a></li>
+          <li><a href="/ciencia" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors">Ciência</a></li>
+          <li><a href="/saude" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors">Saúde</a></li>
+        </ul>
+      </nav>
+
+      <!-- Links -->
+      <nav aria-label="Links úteis">
+        <h4 class="font-semibold text-enjoy-paper mb-4">Links</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="/sobre" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors">Sobre o EnjoyNews</a></li>
+          <li><a href="/metodologia" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors">Metodologia</a></li>
+          <li><a href="/privacidade" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors">Privacidade</a></li>
+          <li><a href="/termos" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors">Termos de Uso</a></li>
+          <li><a href="/contato" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors">Contato</a></li>
+          <li><a href="/newsletter" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors">Newsletter</a></li>
+          <li><a href="/rss.xml" class="text-enjoy-brownLight hover:text-enjoy-orange transition-colors">Feed RSS</a></li>
+        </ul>
+      </nav>
+
+      <!-- Newsletter -->
+      <div>
+        <h4 class="font-semibold text-enjoy-paper mb-4">Receba o resumão diário</h4>
+        <p class="text-sm text-enjoy-brownLight mb-4">
+          As principais notícias da manhã e da tarde no seu e-mail.
+        </p>
+        <form action="/newsletter" method="POST" class="flex flex-col gap-2">
+          <input type="email" name="email" placeholder="seu@email.com" required class="input bg-enjoy-ink/50 border-enjoy-brownLight text-enjoy-paper placeholder-enjoy-brownLight focus:ring-enjoy-orange" />
+          <button type="submit" class="btn-primary w-full">Inscrever-se</button>
+        </form>
+        <p class="text-xs text-enjoy-brownLight mt-2">Sem spam. Cancelamento a qualquer momento.</p>
+      </div>
+    </div>
+
+    <div class="border-t border-enjoy-brownDark mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-enjoy-brownLight">
+        © {currentYear} EnjoyNews. Todos os direitos reservados.
+      </p>
+      <p class="text-sm text-enjoy-brownLight">
+        Automatizado com <span class="text-enjoy-orange">♥</span> • Dados de fontes públicas • Código aberto
+      </p>
+    </div>
+  </div>
+</footer>

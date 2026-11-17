@@ -1,0 +1,75 @@
+name: Generate Daily Video (08:00 BRT = 11:00 UTC)
+
+on:
+  schedule:
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Date for video (YYYY-MM-DD)'
+        required: false
+
+permissions:
+  contents: read
+
+env:
+  VIDEO_OUTPUT_DIR: output/video
+  PEXELS_KEY: ${{ secrets.PEXELS_KEY }}
+  PIXABAY_KEY: ${{ secrets.PIXABAY_KEY }}
+  YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+  YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+  YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+  TIKTOK_CLIENT_KEY: ${{ secrets.TIKTOK_CLIENT_KEY }}
+  TIKTOK_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET }}
+  TIKTOK_ACCESS_TOKEN: ${{ secrets.TIKTOK_ACCESS_TOKEN }}
+
+jobs:
+  video:
+    name: Generate & Upload Video
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: video/constraints.txt
+
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install video pipeline dependencies
+        run: |
+          cd video
+          pip install -e . --constraint=constraints.txt
+
+      - name: Generate video
+        run: |
+          cd video
+          DATE="${{ github.event.inputs.date || github.event.schedule == '0 11 * * *' && date -u +'%Y-%m-%d' || date -u +'%Y-%m-%d' }}"
+          python -m src.main --date "$DATE" --output ../output/video/daily.mp4
+
+      - name: Upload to YouTube Shorts
+        if: env.YOUTUBE_CLIENT_ID != '' && env.YOUTUBE_CLIENT_SECRET != '' && env.YOUTUBE_REFRESH_TOKEN != ''
+        run: |
+          cd video
+          python -m src.upload --file ../output/video/daily.mp4 --title "Resumão EnjoyNews $(date -u -d "$DATE" +'%d/%m/%Y')" --shorts
+
+      - name: Upload to TikTok
+        if: env.TIKTOK_CLIENT_KEY != '' && env.TIKTOK_CLIENT_SECRET != '' && env.TIKTOK_ACCESS_TOKEN != ''
+        run: |
+          cd video
+          python -m src.upload --file ../output/video/daily.mp4 --title "Resumão EnjoyNews $(date -u -d "$DATE" +'%d/%m/%Y')" --tiktok
+
+      - name: Archive video artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-video-${{ github.run_id }}
+          path: output/video/daily.mp4
+          retention-days: 7

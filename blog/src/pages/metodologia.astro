@@ -1,0 +1,118 @@
+---
+import Layout from '../components/layout/Layout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+---
+
+<Layout
+  title="Metodologia - EnjoyNews"
+  description="Detalhes técnicos da pipeline de coleta, resumo, deduplicação e publicação."
+>
+  <slot name="header">
+    <Header />
+  </slot>
+
+  <div class="container mx-auto px-4 py-8 lg:py-12 max-w-4xl">
+    <header class="mb-12 text-center">
+      <h1 class="font-display text-enjoy-ink text-3xl lg:text-4xl mb-4">Metodologia Técnica</h1>
+      <p class="text-enjoy-inkLight text-lg">Transparência total sobre como as notícias são processadas.</p>
+    </header>
+
+    <article class="prose-enjoy prose-enjoy-lg max-w-none">
+      <h2>Pipeline de Coleta</h2>
+      <h3>Fontes</h3>
+      <ul>
+        <li><strong>RSS/Atom:</strong> 80+ feeds de veículos brasileiros, internacionais, latino-americanos e organismos oficiais.</li>
+        <li><strong>NewsAPI.org (free):</strong> 100 req/dia para top headlines por categoria.</li>
+        <li><strong>GNews.io (free):</strong> 100 req/dia complementar.</li>
+        <li><strong>Nitter (X/Twitter):</strong> Instâncias públicas via RSS para contas oficiais e hashtags.</li>
+        <li><strong>Sitemaps:</strong> Parsing de sitemaps XML de sites sem RSS (governos, organismos).</li>
+      </ul>
+      <h3>Frequência</h3>
+      <p>Duas execuções diárias via GitHub Actions cron: 10:00 UTC (07h BRT) e 21:00 UTC (18h BRT).</p>
+
+      <h2>Extração de Conteúdo</h2>
+      <ul>
+        <li><code>newsplease</code> para extração principal (título, autor, data, texto, imagem).</li>
+        <li>Fallback: <code>readability-lxml</code> + <code>html2text</code>.</li>
+        <li>Limpeza: remoção de scripts, styles, navegação, paywalls conhecidos.</li>
+        <li>Mínimo de 200 caracteres para processamento.</li>
+      </ul>
+
+      <h2>Resumo via LLM</h2>
+      <h3>Modelos</h3>
+      <ul>
+        <li>Primário: <code>llama3.1:8b</code> via Ollama (local ou remoto gratuito).</li>
+        <li>Fallback: <code>meta-llama/Meta-Llama-3.1-8B-Instruct</code> via Hugging Face Inference API (30k req/mês grátis).</li>
+        <li>Alternativo: <code>qwen2.5:7b</code> (multilingue forte).</li>
+      </ul>
+      <h3>Prompt Editorial</h3>
+      <p>System prompt define regras estritas (lead de 35 palavras, pirâmide invertida, vocabulário preciso, tom sóbrio).</p>
+      <p>Output estruturado em JSON: headline, kicker, lead, body[], context, tags, importance (1-5), confidence (0-1).</p>
+      <h3>Validação</h3>
+      <ul>
+        <li>Confidence mínima: 0.6 (configurável).</li>
+        <li>Schema validation via Pydantic.</li>
+        <li>Retry automático (3x) com backoff exponencial.</li>
+      </ul>
+
+      <h2>Deduplicação e Clustering</h2>
+      <h3>Nível 1: Hash de URL/Conteúdo</h3>
+      <p>MD5 de URL + título + data. Evita reprocessar o mesmo artigo.</p>
+      <h3>Nível 2: Embeddings Semânticos</h3>
+      <p><code>paraphrase-multilingual-MiniLM-L12-v2</code> (384 dims) para vetorizar resumos.</p>
+      <h3>Nível 3: DBSCAN Clustering</h3>
+      <p>EPS=0.35, min_samples=2, métrica cosseno. Agrupa artigos sobre o mesmo fato.</p>
+      <h3>Seleção</h3>
+      <p>Do cluster, publica-se o artigo com maior <code>importance</code>; outros ficam como "relacionados".</p>
+
+      <h2>Publicação</h2>
+      <ul>
+        <li>Formato: MDX com frontmatter YAML (title, description, pubDate, heroImage, category, tags, sourceName, sourceUrl, importance, kicker).</li>
+        <li>Output: <code>blog/src/content/posts/YYYY-MM-DD-slug-id.mdx</code>.</li>
+        <li>Commit automático via GitHub Actions → deploy Vercel.</li>
+        <li>Índice de clusters salvo em <code>blog/src/content/cluster_index.json</code> para pipeline de vídeo.</li>
+      </ul>
+
+      <h2>Pipeline de Vídeo</h2>
+      <h3>Roteiro</h3>
+      <p>LLM seleciona top 3 clusters por importance/categoria → gera roteiro ~95 palavras (40s).</p>
+      <h3>Narração (TTS)</h3>
+      <p><code>edge-tts</code> com voz <code>pt-BR-ThalitaMultilingualNeural</code> (gratuita, neural, qualidade broadcast). Gera MP3 + word boundaries para legendas.</p>
+      <h3>Footage</h3>
+      <p>Busca no Pexels/Pixabay por categoria + palavras-chave do headline. Download MP4 vertical (9:16).</p>
+      <h3>Composição (ffmpeg)</h3>
+      <ul>
+        <li>Clips redimensionados/padded para 1080x1920.</li>
+        <li>Concatenados na duração da narração.</li>
+        <li>Legendas SRT queimadas (estilo TV: fonte grande, contorno preto, posição inferior).</li>
+        <li>Branding "EnjoyNews" canto inferior.</li>
+        <li>Áudio final AAC 128kbps.</li>
+      </ul>
+      <h3>Publicação</h3>
+      <p>YouTube Data API v3 (Shorts) + TikTok Video Upload API. OAuth2 com refresh tokens.</p>
+
+      <h2>Qualidade e Monitoramento</h2>
+      <ul>
+        <li>Logs estruturados (JSON) em todas as etapas.</li>
+        <li>Métricas: artigos coletados, resumidos, publicados, clusters formados, erros por fonte.</li>
+        <li>Alertas: falha de LLM, API rate limit, deploy falhou.</li>
+        <li>Janela de dedup: 24h (configurável).</li>
+        <li>Limite por execução: 50 artigos (evita explosão).</li>
+      </ul>
+
+      <h2>Limitações Conhecidas</h2>
+      <ul>
+        <li>Dependência de RSS/sitemaps — sites sem feed podem ficar de fora.</li>
+        <li>LLM 8B pode alucinar detalhes menores; confidence threshold mitiga.</li>
+        <li>TTS gratuito tem limites de caracteres/req (edge-tts: ~10k chars/req).</li>
+        <li>Stock footage genérico; nem sempre ilustra o fato específico.</li>
+        <li>YouTube/TikTok APIs requerem aprovação de app (processo manual único).</li>
+      </ul>
+    </article>
+  </div>
+
+  <slot name="footer">
+    <Footer />
+  </slot>
+</Layout>

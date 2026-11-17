@@ -1,0 +1,83 @@
+---
+import Layout from '../components/layout/Layout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+---
+
+<Layout
+  title="Termos de Uso - EnjoyNews"
+  description="Termos e condições de uso do EnjoyNews."
+>
+  <slot name="header">
+    <Header />
+  </slot>
+
+  <div class="container mx-auto px-4 py-8 lg:py-12 max-w-4xl">
+    <header class="mb-12 text-center">
+      <h1 class="font-display text-enjoy-ink text-3xl lg:text-4xl mb-4">Termos de Uso</h1>
+      <p class="text-enjoy-inkLight text-lg">Última atualização: Janeiro de 2025</p>
+    </header>
+
+    <article class="prose-enjoy prose-enjoy-lg max-w-none">
+      <h2>1. Aceitação</h2>
+      <p>Ao acessar e usar o EnjoyNews, você concorda com estes Termos. Se não concordar, não use o site.</p>
+
+      <h2>2. Natureza do Conteúdo</h2>
+      <p>O EnjoyNews publica resumos automatizados de notícias de fontes públicas (RSS, sitemaps, APIs).</p>
+      <ul>
+        <li>O conteúdo é gerado por IA (LLM open source) com prompt editorial fixo.</li>
+        <li>Buscamos precisão factual, mas <strong>não garantimos ausência de erros</strong>.</li>
+        <li>Sempre linkamos para a fonte original. Consulte-a para o conteúdo completo e autoral.</li>
+        <li>O EnjoyNews não produz reportagem original; faz curadoria e resumo automatizado.</li>
+      </ul>
+
+      <h2>3. Propriedade Intelectual</h2>
+      <ul>
+        <li>Código, design, marca "EnjoyNews": © EnjoyNews, licenciado sob MIT (código) / todos os direitos reservados (marca/design).</li>
+        <li>Conteúdo das notícias: pertence aos respectivos veículos e autores originais.</li>
+        <li>Resumos gerados por IA: considerados obra derivada para fins de uso interno; não reivindicamos autoria jornalística.</li>
+      </ul>
+
+      <h2>4. Uso Permitido</h2>
+      <p>Você pode:</p>
+      <ul>
+        <li>Ler, compartilhar links, citar trechos curtos (até 90 caracteres) com atribuição e link.</li>
+        <li>Usar o RSS feed para leitura pessoal.</li>
+      </ul>
+      <p>Você <strong>não pode</strong>:</p>
+      <ul>
+        <li>Fazer scraping massivo ou automatizado do site (exceto RSS).</li>
+        <li>Republicar artigos integrais sem autorização dos veículos originais.</li>
+        <li>Usar a marca "EnjoyNews" para fins comerciais sem permissão.</li>
+        <li>Interferir na operação do site ou burlar controles de acesso.</li>
+      </ul>
+
+      <h2>5. Isenção de Responsabilidade</h2>
+      <p>O conteúdo é fornecido "como está", sem garantias de qualquer tipo.</p>
+      <ul>
+        <li>Não nos responsabilizamos por decisões baseadas em nosso conteúdo.</li>
+        <li>Não garantimos disponibilidade ininterrupta ou livre de erros.</li>
+        <li>Fontes externas podem mudar, remover ou restringir conteúdo sem aviso.</li>
+      </ul>
+
+      <h2>6. Limitação de Responsabilidade</h2>
+      <p>Em nenhum caso o EnjoyNews será responsável por danos diretos, indiretos, incidentais, consequenciais ou punitivos decorrentes do uso ou incapacidade de usar o site.</p>
+
+      <h2>7. Links para Terceiros</h2>
+      <p>Linkamos para fontes originais. Não endossamos, controlamos ou nos responsabilizamos por conteúdo, privacidade ou práticas de sites de terceiros.</p>
+
+      <h2>8. Modificações</h2>
+      <p>Podemos modificar estes termos a qualquer momento. Versão atualizada entra em vigor na publicação.</p>
+
+      <h2>9. Lei Aplicável e Foro</h2>
+      <p>Regidos pelas leis da República Federativa do Brasil. Foro da Comarca de São Paulo/SP para dirimir controvérsias.</p>
+
+      <h2>10. Contato</h2>
+      <p>Dúvidas: <a href="mailto:contato@enjoynews.com.br" class="link">contato@enjoynews.com.br</a></p>
+    </article>
+  </div>
+
+  <slot name="footer">
+    <Footer />
+  </slot>
+</Layout>

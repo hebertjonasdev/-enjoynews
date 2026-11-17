@@ -1,0 +1,43 @@
+---
+interface Props {
+  videoId: string;
+  platform?: 'youtube' | 'tiktok';
+  title?: string;
+  class?: string;
+}
+
+const { videoId, platform = 'youtube', title, class: className } = Astro.props;
+
+const youtubeUrl = `https://www.youtube.com/shorts/${videoId}`;
+const tiktokUrl = `https://www.tiktok.com/@enjoynews/video/${videoId}`;
+const embedUrl = platform === 'youtube' ? `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0` : `https://www.tiktok.com/embed/${videoId}`;
+---
+
+<div class={classList({ 'card overflow-hidden': true, [className]: true })}>
+  <div class="relative aspect-[9/16] bg-enjoy-ink">
+    <iframe
+      src={embedUrl}
+      title={title || `Vídeo EnjoyNews - ${videoId}`}
+      class="absolute inset-0 w-full h-full border-0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+      loading="lazy"
+    ></iframe>
+    <a href={platform === 'youtube' ? youtubeUrl : tiktokUrl} target="_blank" rel="noopener" class="absolute inset-0 flex items-center justify-center" aria-label={`Assistir no ${platform === 'youtube' ? 'YouTube' : 'TikTok'}`}>
+      <div class="bg-enjoy-ink/50 backdrop-blur-sm p-4 rounded-full transition-transform hover:scale-110">
+        <svg class="w-8 h-8 text-enjoy-paper" fill="currentColor" viewBox="0 0 24 24">
+          {platform === 'youtube' ? (
+            <path d="M8 5v14l11-7z"/>
+          ) : (
+            <path d="M12.545 11.261v6.284c0 .61.784.902 1.169.63l4.688-3.635c.455-.354.455-1.072 0-1.426L13.714 10.63c-.384-.271-1.169.021-1.169.631zm-3.456-2.144c0 3.012 2.627 4.867 5.003 4.973V7.158c-2.376-.106-5.003 1.749-5.003 4.959zm9.544-.719c-.08-4.127-3.873-6.932-7.485-6.644v14.68c3.774-.279 7.168-2.956 7.485-6.843v-1.193z"/>
+          )}
+        </svg>
+      </div>
+    </a>
+  </div>
+  {title && (
+    <div class="p-4">
+      <h3 class="font-display text-enjoy-ink text-lg">{title}</h3>
+    </div>
+  )}
+</div>

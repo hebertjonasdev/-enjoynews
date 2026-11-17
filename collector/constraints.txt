@@ -1,0 +1,26 @@
+# Constrained versions for reproducible builds
+# Generated with: pip compile pyproject.toml --output-file=constraints.txt
+# Update periodically: pip install pip-tools && pip-compile pyproject.toml
+
+httpx==0.27.0
+feedparser==6.0.11
+newsplease==1.6.10
+readability-lxml==0.8.1
+lxml==5.2.0
+beautifulsoup4==4.12.0
+html2text==2024.2.26
+pydantic==2.7.0
+pydantic-settings==2.3.0
+ollama==0.3.0
+huggingface-hub==0.23.0
+python-dotenv==1.0.1
+pyyaml==6.0.1
+tqdm==4.66.0
+tenacity==8.3.0
+orjson==3.9.0
+python-dateutil==2.9.0
+pytz==2024.1
+rich==13.7.0
+sentence-transformers==3.0.0
+scikit-learn==1.4.0
+numpy==1.26.0

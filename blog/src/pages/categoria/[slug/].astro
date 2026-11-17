@@ -1,0 +1,85 @@
+---
+import Layout from '../../components/layout/Layout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import ArticleCard from '../../components/article/ArticleCard.astro';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
+export async function getStaticPaths() {
+  const categories = ['brasil', 'mundo', 'economia', 'tecnologia', 'latino-america', 'esportes', 'cultura', 'ciencia', 'saude', 'meio-ambiente', 'politica', 'educacao'];
+  return categories.map(cat => ({ params: { slug: cat } }));
+}
+
+const { slug } = Astro.props;
+
+// Map slug to category name
+const categoryMap: Record<string, string> = {
+  'brasil': 'Brasil',
+  'mundo': 'Mundo',
+  'economia': 'Economia',
+  'tecnologia': 'Tecnologia',
+  'latino-america': 'Latino-América',
+  'esportes': 'Esportes',
+  'cultura': 'Cultura',
+  'ciencia': 'Ciência',
+  'saude': 'Saúde',
+  'meio-ambiente': 'Meio Ambiente',
+  'politica': 'Política',
+  'educacao': 'Educação',
+};
+
+const categoryName = categoryMap[slug] || slug;
+
+// Get posts for this category
+const allPosts = await Astro.glob('../content/posts/*.mdx');
+const categoryPosts = allPosts
+  .filter(p => p.frontmatter.category === categoryName)
+  .map(post => ({
+    ...post,
+    data: post.frontmatter,
+    slug: `/post/${post.file.split('/').pop()?.replace('.mdx', '')}`,
+  }))
+  .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
+---
+
+<Layout
+  title={`${categoryName} - EnjoyNews`}
+  description={`Todas as notícias sobre ${categoryName} no EnjoyNews. Jornalismo automatizado com curadoria editorial.`}
+>
+  <slot name="header">
+    <Header />
+  </slot>
+
+  <div class="container mx-auto px-4 py-8 lg:py-12">
+    <header class="mb-10">
+      <nav class="text-sm text-enjoy-inkMuted mb-4" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-enjoy-orange">Início</a>
+        <span class="mx-2">/</span>
+        <span class="font-medium text-enjoy-ink">{categoryName}</span>
+      </nav>
+      <h1 class="font-display text-enjoy-ink text-3xl lg:text-4xl">{categoryName}</h1>
+      <p class="text-enjoy-inkLight mt-2 max-w-2xl">
+        Últimas notícias sobre {categoryName.toLowerCase()} resumidas com rigor e elegância.
+      </p>
+    </header>
+
+    {categoryPosts.length > 0 ? (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {categoryPosts.map((post, i) => (
+          <ArticleCard {...post.data} slug={post.slug} class="stagger-{i + 1} animate-slide-up" />
+        ))}
+      </div>
+    ) : (
+      <div class="text-center py-16">
+        <svg class="w-16 h-16 mx-auto text-enjoy-brownLight mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <h2 class="font-display text-enjoy-ink text-xl mb-2">Nenhuma notícia ainda</h2>
+        <p class="text-enjoy-inkMuted">Volte mais tarde para ver as últimas atualizações.</p>
+      </div>
+    )}
+  </div>
+
+  <slot name="footer">
+    <Footer />
+  </slot>
+</Layout>

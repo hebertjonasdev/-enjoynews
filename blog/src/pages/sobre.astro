@@ -1,0 +1,116 @@
+---
+import Layout from '../components/layout/Layout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+---
+
+<Layout
+  title="Sobre o EnjoyNews"
+  description="Conheça a metodologia, tecnologia e princípios editoriais do EnjoyNews."
+>
+  <slot name="header">
+    <Header />
+  </slot>
+
+  <div class="container mx-auto px-4 py-8 lg:py-12 max-w-4xl">
+    <header class="mb-12 text-center">
+      <h1 class="font-display text-enjoy-ink text-3xl lg:text-4xl mb-4">Sobre o EnjoyNews</h1>
+      <p class="text-enjoy-inkLight text-lg">
+        Jornalismo automatizado com curadoria editorial para a era da informação abundante.
+      </p>
+    </header>
+
+    <article class="prose-enjoy prose-enjoy-lg max-w-none">
+      <h2>Nossa Missão</h2>
+      <p>
+        O EnjoyNews nasceu da necessidade de filtrar o ruído informativo e entregar notícias relevantes,
+        bem escritas e confiáveis — sem sensacionalismo, sem clickbait, sem viés oculto.
+      </p>
+      <p>
+        Publicamos duas edições diárias (07h e 18h, horário de Brasília) com as principais notícias do
+        Brasil, do mundo e da América Latina, além de um resumão em vídeo de 40 segundos às 08h.
+      </p>
+
+      <h2>Como Funciona</h2>
+      <h3>1. Coleta Automatizada</h3>
+      <p>
+        Monitoramos dezenas de fontes confiáveis via RSS, sitemaps e APIs públicas gratuitas:
+        portais brasileiros (G1, Folha, UOL, Estadão, Valor, CNN Brasil), veículos internacionais
+        (BBC, NYT, Reuters, AP, El País, DW, France 24), organismos oficiais (ONU, OMS, FMI, Banco
+        Mundial, STF, TSE, BCB) e veículos latino-americanos (Clarín, La Nación, El Universal,
+        El Tiempo, La Tercera, entre outros).
+      </p>
+      <h3>2. Extração e Limpeza</h3>
+      <p>
+        Cada artigo é baixado e processado para extrair apenas o conteúdo textual relevante,
+        removendo navegação, anúncios, paywalls e elementos não editoriais.
+      </p>
+      <h3>3. Resumo Jornalístico via LLM</h3>
+      <p>
+        Utilizamos modelos de linguagem open source (Llama 3.1 8B, Qwen 2.5 7B) rodando localmente
+        ou via APIs gratuitas (Hugging Face Inference) para gerar resumos no estilo editorial
+        combinado de G1 (lead direto), BBC (neutralidade e contexto global) e The New York Times
+        (profundidade sutil e vocabulário preciso).
+      </p>
+      <h3>4. Deduplicação e Agrupamento</h3>
+      <p>
+        Artigos sobre o mesmo fato são agrupados via embeddings semânticos (sentence-transformers)
+        e clustering (DBSCAN), publicando apenas a versão mais completa e evitando repetição.
+      </p>
+      <h3>5. Publicação Estática</h3>
+      <p>
+        Os artigos viram arquivos MDX e são publicados no blog Astro, deployado no Vercel.
+        O site é 100% estático: carrega instantaneamente, é seguro e escala sem custo.
+      </p>
+      <h3>6. Vídeo Diário</h3>
+      <p>
+        Um roteiro de 40 segundos é gerado a partir das 3 notícias mais importantes,
+        narrado por TTS neural (Microsoft Edge TTS, gratuito), ilustrado com stock footage
+        vertical (Pexels/Pixabay, APIs gratuitas) e composto via ffmpeg.
+        O vídeo final é enviado automaticamente para YouTube Shorts e TikTok.
+      </p>
+
+      <h2>Princípios Editoriais</h2>
+      <ul>
+        <li><strong>Factualidade:</strong> Apenas fatos verificáveis. Opinião, análise e especulação ficam fora.</li>
+        <li><strong>Neutralidade:</strong> Múltiplas perspectivas quando o tema é controverso. Zero viés partidário.</li>
+        <li><strong>Atribuição Clara:</strong> Toda notícia linka para a fonte original. Crédito a quem apurou.</li>
+        <li><strong>Correção Ágil:</strong> Erros factuais são corrigidos assim que identificados, com registro de alteração.</li>
+        <li><strong>Transparência Algorítmica:</strong> Nosso código é open source. A metodologia é pública.</li>
+      </ul>
+
+      <h2>Tecnologia</h2>
+      <ul>
+        <li><strong>Coleta/LLM/Vídeo:</strong> Python 3.11 (httpx, feedparser, newsplease, ollama, edge-tts, moviepy, ffmpeg)</li>
+        <li><strong>Blog:</strong> Astro 4 + Tailwind CSS + MDX (static site generation)</li>
+        <li><strong>Orquestração:</strong> GitHub Actions (cron 07h/18h/08h BRT)</li>
+        <li><strong>Deploy:</strong> Vercel (gratuito, edge global)</li>
+        <li><strong>LLM:</strong> Ollama local / Hugging Face Inference API (gratuito)</li>
+        <li><strong>TTS:</strong> Microsoft Edge TTS (gratuito, vozes neurais pt-BR)</li>
+        <li><strong>Footage:</strong> Pexels API / Pixabay API (gratuito)</li>
+      </ul>
+
+      <h2>Custos</h2>
+      <p>
+        <strong>Zero custo marginal.</strong> Todas as APIs utilizadas têm tiers gratuitos generosos.
+        O único custo opcional é o domínio próprio (R$ 40/ano no Registro.br).
+        Hospedagem, compute, LLM, TTS, footage e CDN são gratuitos nos tiers utilizados.
+      </p>
+
+      <h2>Código Aberto</h2>
+      <p>
+        Todo o código está disponível no GitHub sob licença MIT.
+        Contribuições, issues e forks são bem-vindos.
+      </p>
+
+      <h2>Contato</h2>
+      <p>
+        Dúvidas, sugestões ou relatos de erro: <a href="mailto:contato@enjoynews.com.br" class="link">contato@enjoynews.com.br</a>
+      </p>
+    </article>
+  </div>
+
+  <slot name="footer">
+    <Footer />
+  </slot>
+</Layout>

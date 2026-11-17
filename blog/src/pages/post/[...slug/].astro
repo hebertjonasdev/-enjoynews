@@ -1,0 +1,114 @@
+---
+import Layout from '../../components/layout/Layout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import HeroArticle from '../../components/article/HeroArticle.astro';
+import ArticleCard from '../../components/article/ArticleCard.astro';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
+export async function getStaticPaths() {
+  const posts = await Astro.glob('../content/posts/*.mdx');
+  return posts.map(post => ({
+    params: { slug: post.file.split('/').pop()?.replace('.mdx', '') },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate, heroImage, heroImageAlt, category, tags, sourceName, sourceUrl, importance, kicker, body, context } = post.frontmatter;
+
+const slug = `/post/${post.file.split('/').pop()?.replace('.mdx', '')}`;
+const date = new Date(pubDate);
+const formattedDate = format(date, "EEEE, d 'de' MMMM 'de' yyyy", { locale: ptBR });
+const timeAgo = format(date, "HH:mm", { locale: ptBR });
+
+// Related articles (same category, exclude current)
+const allPosts = await Astro.glob('../content/posts/*.mdx');
+const relatedPosts = allPosts
+  .filter(p => p.frontmatter.category === category && p.file !== post.file)
+  .sort((a, b) => new Date(b.frontmatter.pubDate).getTime() - new Date(a.frontmatter.pubDate).getTime())
+  .slice(0, 4)
+  .map(p => ({
+    ...p,
+    data: p.frontmatter,
+    slug: `/post/${p.file.split('/').pop()?.replace('.mdx', '')}`,
+  }));
+---
+
+<Layout
+  title={title}
+  description={description}
+  canonical={slug}
+  ogImage={heroImage}
+  ogType="article"
+  publishedTime={pubDate}
+  modifiedTime={post.frontmatter.updatedDate}
+  author="EnjoyNews Bot"
+  section={category}
+  tags={tags}
+>
+  <slot name="header">
+    <Header />
+  </slot>
+
+  <div class="container mx-auto px-4 py-8 lg:py-12">
+    <article>
+      <HeroArticle article={post}>
+        <div class="prose-enjoy prose-enjoy-lg max-w-none">
+          {body?.map((paragraph: string, i: number) => (
+            <p key={i}>{paragraph}</p>
+          ))}
+          {context && <p class="font-medium text-enjoy-ink mt-8">{context}</p>}
+        </div>
+      </HeroArticle>
+
+      <!-- Share / Meta -->
+      <div class="mt-10 pt-8 border-t border-enjoy-line flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-2">
+          {category && <span class="badge-brown text-sm">{category}</span>}
+          {tags?.slice(0, 5).map(tag => (
+            <span key={tag} class="badge-gray text-sm">#{tag}</span>
+          ))}
+        </div>
+        <div class="flex items-center gap-3">
+          <button class="btn-ghost text-sm" aria-label="Compartilhar no Twitter">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
+          </button>
+          <button class="btn-ghost text-sm" aria-label="Compartilhar no WhatsApp">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.52 3.48A11.98 11.98 0 0012 0C5.37 0 0 5.37 0 12c0 1.92.49 3.74 1.38 5.33L0 24l6.23-1.64A11.96 11.96 0 0012 24c6.63 0 12-5.37 12-12 0-.71-.05-1.41-.15-2.1A8.5 8.5 0 0020.52 3.48zM7 11a1 1 0 112 0 1 1 0 01-2 0zm4 0a1 1 0 112 0 1 1 0 01-2 0zm4 0a1 1 0 112 0 1 1 0 01-2 0zm2 5a1 1 0 112 0 1 1 0 01-2 0zm-4 0a1 1 0 112 0 1 1 0 01-2 0zm-4 0a1 1 0 112 0 1 1 0 01-2 0z"/></svg>
+          </button>
+          <button class="btn-ghost text-sm" aria-label="Copiar link">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Source attribution -->
+      {sourceUrl && (
+        <div class="mt-8 p-4 bg-enjoy-beige rounded-lg border border-enjoy-line">
+          <p class="text-sm text-enjoy-inkMuted flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-1.343 3-3s-1.343-3-3-3"/></svg>
+            Esta notícia foi resumida a partir de <a href={sourceUrl} target="_blank" rel="noopener" class="text-enjoy-orange hover:underline font-medium">{sourceName}</a>. O conteúdo original pertence aos respectivos autores e veículos.
+          </p>
+        </div>
+      )}
+
+      <!-- Related Articles -->
+      {relatedPosts.length > 0 && (
+        <section class="mt-12" aria-labelledby="related-title">
+          <h2 id="related-title" class="font-display text-enjoy-ink text-2xl mb-6">Leia também</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {relatedPosts.map((related, i) => (
+              <ArticleCard {...related.data} slug={related.slug} class="stagger-{i + 1} animate-slide-up" />
+            ))}
+          </div>
+        </section>
+      )}
+    </article>
+  </div>
+
+  <slot name="footer">
+    <Footer />
+  </slot>
+</Layout>

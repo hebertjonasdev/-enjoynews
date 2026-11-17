@@ -1,0 +1,46 @@
+---
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+  children: any;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+}
+
+const { href, variant = 'primary', size = 'md', class: className = '', children, type = 'button', disabled = false } = Astro.props;
+
+const baseClasses = 'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+
+const variants = {
+  primary: 'bg-enjoy-orange text-white hover:bg-enjoy-orangeDark focus:ring-enjoy-orange',
+  secondary: 'bg-enjoy-brown text-white hover:bg-enjoy-brownDark focus:ring-enjoy-brown',
+  ghost: 'bg-transparent text-enjoy-ink hover:bg-enjoy-beigeDark focus:ring-enjoy-ink',
+};
+
+const sizes = {
+  sm: 'px-3 py-1.5 text-sm',
+  md: 'px-5 py-2.5 text-base',
+  lg: 'px-7 py-3 text-lg',
+};
+---
+
+{href ? (
+  <a
+    href={href}
+    class={classList({ [baseClasses]: true, [variants[variant]]: true, [sizes[size]]: true, [className]: true })}
+    aria-disabled={disabled}
+    tabindex={disabled ? -1 : undefined}
+  >
+    <slot />
+  </a>
+) : (
+  <button
+    type={type}
+    class={classList({ [baseClasses]: true, [variants[variant]]: true, [sizes[size]]: true, [className]: true })}
+    disabled={disabled}
+  >
+    <slot />
+  </button>
+)}

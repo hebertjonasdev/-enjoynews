@@ -1,0 +1,95 @@
+{
+  "categories": [
+    {
+      "slug": "brasil",
+      "name": "Brasil",
+      "description": "Notícias gerais do Brasil",
+      "color": "enjoy-orange",
+      "icon": "flag"
+    },
+    {
+      "slug": "mundo",
+      "name": "Mundo",
+      "description": "Notícias internacionais",
+      "color": "enjoy-brown",
+      "icon": "globe"
+    },
+    {
+      "slug": "economia",
+      "name": "Economia",
+      "description": "Mercados, finanças, política econômica",
+      "color": "enjoy-green",
+      "icon": "chart-bar"
+    },
+    {
+      "slug": "tecnologia",
+      "name": "Tecnologia",
+      "description": "Inovação, IA, ciência da computação",
+      "color": "enjoy-blue",
+      "icon": "cpu-chip"
+    },
+    {
+      "slug": "latino-america",
+      "name": "Latino-América",
+      "description": "Notícias da América Latina e Caribe",
+      "color": "enjoy-purple",
+      "icon": "map"
+    },
+    {
+      "slug": "esportes",
+      "name": "Esportes",
+      "description": "Futebol, olimpíadas, esportes gerais",
+      "color": "enjoy-red",
+      "icon": "trophy"
+    },
+    {
+      "slug": "cultura",
+      "name": "Cultura",
+      "description": "Artes, entretenimento, livros, cinema",
+      "color": "enjoy-pink",
+      "icon": "film"
+    },
+    {
+      "slug": "ciencia",
+      "name": "Ciência",
+      "description": "Pesquisa, descobertas, espaço, saúde",
+      "color": "enjoy-cyan",
+      "icon": "flask-conical"
+    },
+    {
+      "slug": "saude",
+      "name": "Saúde",
+      "description": "Saúde pública, medicina, bem-estar",
+      "color": "enjoy-red",
+      "icon": "heart-pulse"
+    },
+    {
+      "slug": "meio-ambiente",
+      "name": "Meio Ambiente",
+      "description": "Clima, sustentabilidade, natureza",
+      "color": "enjoy-green",
+      "icon": "leaf"
+    },
+    {
+      "slug": "politica",
+      "name": "Política",
+      "description": "Poder, legislativo, judiciário, eleições",
+      "color": "enjoy-blue",
+      "icon": "building-government"
+    },
+    {
+      "slug": "educacao",
+      "name": "Educação",
+      "description": "Ensino, universidades, políticas educacionais",
+      "color": "enjoy-yellow",
+      "icon": "graduation-cap"
+    }
+  ],
+  "importance_levels": {
+    1: { "label": "Menor", "description": "Notícia local ou nicho" },
+    2: { "label": "Baixa", "description": "Relevância limitada" },
+    3: { "label": "Média", "description": "Interesse geral" },
+    4: { "label": "Alta", "description": "Impacto nacional/setorial" },
+    5: { "label": "Urgente", "description": "Breaking news, impacto imediato" }
+  }
+}

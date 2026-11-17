@@ -1,0 +1,26 @@
+---
+interface Props {
+  variant?: 'orange' | 'brown' | 'green' | 'gray';
+  size?: 'sm' | 'md';
+  class?: string;
+  children: any;
+}
+
+const { variant = 'orange', size = 'md', class: className = '', children } = Astro.props;
+
+const variants = {
+  orange: 'bg-enjoy-orangePale text-enjoy-orangeDark',
+  brown: 'bg-enjoy-beigeDark text-enjoy-brownDark',
+  green: 'bg-green-50 text-green-700',
+  gray: 'bg-enjoy-line text-enjoy-inkMuted',
+};
+
+const sizes = {
+  sm: 'px-2 py-0.5 text-xs',
+  md: 'px-2.5 py-0.5 text-sm',
+};
+---
+
+<span class={classList({ 'inline-flex items-center rounded-full font-medium': true, [variants[variant]]: true, [sizes[size]]: true, [className]: true })}>
+  <slot />
+</span>

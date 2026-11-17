@@ -1,0 +1,82 @@
+---
+import Layout from '../components/layout/Layout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+---
+
+<Layout
+  title="Newsletter - EnjoyNews"
+  description="Inscreva-se para receber o resumão diário no seu e-mail."
+>
+  <slot name="header">
+    <Header />
+  </slot>
+
+  <div class="container mx-auto px-4 py-8 lg:py-12 max-w-2xl text-center">
+    <header class="mb-12">
+      <h1 class="font-display text-enjoy-ink text-3xl lg:text-4xl mb-4">Newsletter Diária</h1>
+      <p class="text-enjoy-inkLight text-lg">
+        Receba as principais notícias da manhã (07h) e da tarde (18h) direto na sua caixa de entrada.
+        Curadoria editorial, zero spam, cancelamento em um clique.
+      </p>
+    </header>
+
+    <form action="https://formspree.io/f/SEU_ID_NEWSLETTER" method="POST" class="space-y-4" netlify>
+      <div class="text-left">
+        <label for="email" class="block text-sm font-medium text-enjoy-ink mb-1">Seu melhor e-mail</label>
+        <input type="email" id="email" name="email" placeholder="seu@email.com" required class="input" autocomplete="email" />
+      </div>
+      <div class="text-left">
+        <label for="time" class="block text-sm font-medium text-enjoy-ink mb-1">Preferência de horário</label>
+        <select id="time" name="time" class="input">
+          <option value="both">Ambas (07h e 18h) — Recomendado</option>
+          <option value="morning">Apenas manhã (07h)</option>
+          <option value="afternoon">Apenas tarde (18h)</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-primary w-full lg:w-auto px-10 py-3 text-lg">Inscrever-se</button>
+      <p class="text-xs text-enjoy-inkMuted">
+        Ao se inscrever, você concorda com nossa <a href="/privacidade" class="underline hover:text-enjoy-orange">Política de Privacidade</a>.
+        Não compartilhamos seu e-mail. Cancelamento a qualquer momento no rodapé dos e-mails.
+      </p>
+    </form>
+
+    <div class="mt-16 p-6 bg-enjoy-beige rounded-xl">
+      <h3 class="font-display text-enjoy-ink text-lg mb-3">O que você vai receber</h3>
+      <div class="grid sm:grid-cols-2 gap-4 text-left">
+        <div class="flex items-start gap-3">
+          <svg class="w-6 h-6 text-enjoy-orange shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <div>
+            <p class="font-medium text-enjoy-ink">Edição Manhã (07h)</p>
+            <p class="text-sm text-enjoy-inkLight">Top 10 notícias da madrugada/manhã</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <svg class="w-6 h-6 text-enjoy-orange shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <div>
+            <p class="font-medium text-enjoy-ink">Edição Tarde (18h)</p>
+            <p class="text-sm text-enjoy-inkLight">Atualizações e novos fatos do dia</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <svg class="w-6 h-6 text-enjoy-orange shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <div>
+            <p class="font-medium text-enjoy-ink">Link para o artigo completo</p>
+            <p class="text-sm text-enjoy-inkLight">Leia o resumo e acesse a fonte original</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <svg class="w-6 h-6 text-enjoy-orange shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <div>
+            <p class="font-medium text-enjoy-ink">Resumão em Vídeo (08h)</p>
+            <p class="text-sm text-enjoy-inkLight">Link para YouTube Shorts / TikTok</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <slot name="footer">
+    <Footer />
+  </slot>
+</Layout>

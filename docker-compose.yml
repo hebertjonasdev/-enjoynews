@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # Ollama local (opcional - se quiser rodar local em vez de remoto)
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    command: serve
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    profiles:
+      - local-llm
+
+  collector:
+    build:
+      context: ./collector
+      dockerfile: Dockerfile
+    environment:
+      - OLLAMA_HOST=${OLLAMA_HOST:-http://ollama:11434}
+      - HF_API_TOKEN=${HF_API_TOKEN:-}
+      - NEWSAPI_KEY=${NEWSAPI_KEY:-}
+      - GNEWS_KEY=${GNEWS_KEY:-}
+      - NITTER_INSTANCES=${NITTER_INSTANCES:-https://nitter.net,https://nitter.1d4.us,https://nitter.kavin.rocks}
+    volumes:
+      - ./collector/src:/app/src:ro
+      - ./blog/src/content/posts:/output/posts
+      - ./shared:/app/shared:ro
+    depends_on:
+      ollama:
+        condition: service_healthy
+    profiles:
+      - collector
+    command: python -m src.pipeline --output /output/posts --once
+
+  video:
+    build:
+      context: ./video
+      dockerfile: Dockerfile
+    environment:
+      - PEXELS_KEY=${PEXELS_KEY:-}
+      - PIXABAY_KEY=${PIXABAY_KEY:-}
+      - YOUTUBE_CLIENT_ID=${YOUTUBE_CLIENT_ID:-}
+      - YOUTUBE_CLIENT_SECRET=${YOUTUBE_CLIENT_SECRET:-}
+      - YOUTUBE_REFRESH_TOKEN=${YOUTUBE_REFRESH_TOKEN:-}
+      - TIKTOK_CLIENT_KEY=${TIKTOK_CLIENT_KEY:-}
+      - TIKTOK_CLIENT_SECRET=${TIKTOK_CLIENT_SECRET:-}
+      - TIKTOK_ACCESS_TOKEN=${TIKTOK_ACCESS_TOKEN:-}
+    volumes:
+      - ./video/src:/app/src:ro
+      - ./output/video:/output
+      - ./shared:/app/shared:ro
+    profiles:
+      - video
+    command: python -m src.main --date ${DATE:-$(date +%Y-%m-%d)} --output /output/daily.mp4
+
+  blog:
+    build:
+      context: ./blog
+      dockerfile: Dockerfile
+    ports:
+      - "4321:4321"
+    volumes:
+      - ./blog:/app
+      - /app/node_modules
+    command: npm run dev
+    profiles:
+      - blog
+
+volumes:
+  ollama_data:

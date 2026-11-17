@@ -1,0 +1,155 @@
+---
+import Layout from '../components/layout/Layout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import BreakingBanner from '../components/article/BreakingBanner.astro';
+import HeroArticle from '../components/article/HeroArticle.astro';
+import ArticleCard from '../components/article/ArticleCard.astro';
+import VideoPlayer from '../components/video/VideoPlayer.astro';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
+const siteUrl = 'https://enjoynews.com.br';
+
+// Get all articles from content collection
+const allPosts = await Astro.glob('../content/posts/*.mdx');
+const sortedPosts = allPosts
+  .map(post => ({
+    ...post,
+    data: post.frontmatter,
+    slug: `/post/${post.file.split('/').pop()?.replace('.mdx', '')}`,
+  }))
+  .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
+
+// Breaking news (importance >= 4)
+const breakingPosts = sortedPosts.filter(p => p.data.importance && p.data.importance >= 4).slice(0, 5);
+
+// Main hero (most important recent)
+const heroPost = sortedPosts[0];
+
+// Featured grid (next 6)
+const featuredPosts = sortedPosts.slice(1, 7);
+
+// Latest by category
+const categories = ['Brasil', 'Mundo', 'Economia', 'Tecnologia', 'Latino-América', 'Esportes', 'Cultura', 'Ciência', 'Saúde'];
+const categoryPosts: Record<string, any[]> = {};
+for (const cat of categories) {
+  categoryPosts[cat] = sortedPosts
+    .filter(p => p.data.category === cat)
+    .slice(0, 4);
+}
+
+// Latest video (would come from video pipeline)
+const latestVideo = {
+  id: 'dQw4w9WgXcQ', // placeholder
+  title: 'Resumão EnjoyNews - Principais notícias do dia',
+  date: new Date().toISOString(),
+};
+---
+
+<Layout
+  title="EnjoyNews - Jornalismo automatizado com curadoria editorial"
+  description="As principais notícias do Brasil, mundo e Latino-América resumidas com rigor e elegância. Atualizado 2x ao dia."
+>
+  <slot name="header">
+    <Header />
+    {breakingPosts.length > 0 && <BreakingBanner articles={breakingPosts} />}
+  </slot>
+
+  <div class="container mx-auto px-4 py-6 lg:py-8">
+    <!-- Hero Section -->
+    {heroPost && (
+      <section aria-labelledby="hero-title" class="mb-10">
+        <HeroArticle article={heroPost}>
+          <div class="prose-enjoy prose-enjoy-lg max-w-none">
+            {heroPost.data.body?.map((paragraph: string, i: number) => (
+              <p key={i}>{paragraph}</p>
+            ))}
+            {heroPost.data.context && <p class="font-medium text-enjoy-ink">{heroPost.data.context}</p>}
+          </div>
+        </HeroArticle>
+      </section>
+    )}
+
+    <!-- Featured Grid -->
+    {featuredPosts.length > 0 && (
+      <section aria-labelledby="featured-title" class="mb-10">
+        <div class="flex items-center justify-between mb-6">
+          <h2 id="featured-title" class="font-display text-enjoy-ink text-2xl lg:text-3xl">Destaques</h2>
+          <a href="/todas" class="text-enjoy-orange font-medium hover:underline text-sm">Ver todas →</a>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {featuredPosts.map((post, i) => (
+            <ArticleCard {...post.data} slug={post.slug} class="stagger-{i + 1} animate-slide-up" />
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Latest Video -->
+    <section aria-labelledby="video-title" class="mb-10">
+      <div class="flex items-center justify-between mb-6">
+        <h2 id="video-title" class="font-display text-enjoy-ink text-2xl lg:text-3xl flex items-center gap-2">
+          <svg class="w-6 h-6 text-enjoy-orange" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          Resumão em Vídeo
+        </h2>
+        <a href="/video" class="text-enjoy-orange font-medium hover:underline text-sm">Ver todos →</a>
+      </div>
+      <VideoPlayer
+        videoId={latestVideo.id}
+        platform="youtube"
+        title={latestVideo.title}
+      />
+    </section>
+
+    <!-- Categories Grid -->
+    <section aria-labelledby="categories-title" class="mb-10">
+      <h2 id="categories-title" class="font-display text-enjoy-ink text-2xl lg:text-3xl mb-6">Por Categoria</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {categories.map(cat => {
+          const posts = categoryPosts[cat];
+          if (posts.length === 0) return null;
+          return (
+            <article key={cat} class="card p-5">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-display text-enjoy-ink text-xl">{cat}</h3>
+                <a href={`/${cat.toLowerCase().replace(' ', '-').replace('ã','a').replace('ç','c')}`} class="text-enjoy-orange text-sm font-medium hover:underline">Ver mais →</a>
+              </div>
+              <div class="space-y-3">
+                {posts.slice(0, 3).map(post => (
+                  <a href={post.slug} key={post.slug} class="flex gap-3 group hover:gap-4 transition-all">
+                    {post.data.heroImage && (
+                      <img src={post.data.heroImage} alt="" class="w-20 h-20 object-cover rounded-lg shrink-0" loading="lazy" />
+                    )}
+                    <div class="flex-1 min-w-0">
+                      <p class="font-medium text-enjoy-ink line-clamp-2 group-hover:text-enjoy-orange transition-colors">{post.data.title}</p>
+                      <time class="text-xs text-enjoy-inkMuted">{format(new Date(post.data.pubDate), "d MMM HH:mm", { locale: ptBR })}</time>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- Newsletter CTA -->
+    <section class="bg-enjoy-ink text-enjoy-paper rounded-2xl p-8 lg:p-12 text-center">
+      <h2 class="font-display text-enjoy-orange text-2xl lg:text-3xl mb-4">Receba o resumão diário</h2>
+      <p class="text-enjoy-brownLight mb-6 max-w-xl mx-auto">
+        As principais notícias da manhã (07h) e da tarde (18h) direto no seu e-mail.
+        Curadoria editorial, zero spam.
+      </p>
+      <form action="/newsletter" method="POST" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+        <input type="email" name="email" placeholder="seu@email.com" required class="input flex-1 bg-enjoy-ink/50 border-enjoy-brownLight text-enjoy-paper placeholder-enjoy-brownLight focus:ring-enjoy-orange" />
+        <button type="submit" class="btn-primary whitespace-nowrap">Inscrever-se</button>
+      </form>
+      <p class="text-xs text-enjoy-brownLight mt-3">Ao se inscrever, você concorda com nossa <a href="/privacidade" class="underline hover:text-enjoy-orange">Política de Privacidade</a>.</p>
+    </section>
+  </div>
+
+  <slot name="footer">
+    <Footer />
+  </slot>
+</Layout>

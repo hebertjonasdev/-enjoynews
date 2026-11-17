@@ -1,0 +1,113 @@
+name: Collect & Publish (07:00 / 18:00 BRT)
+
+on:
+  schedule:
+    # 07:00 BRT = 10:00 UTC | 18:00 BRT = 21:00 UTC
+    - cron: '0 10,21 * * *'
+  workflow_dispatch:
+    inputs:
+      max_articles:
+        description: 'Max articles per run'
+        required: false
+        default: '50'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+env:
+  MAX_ARTICLES_PER_RUN: ${{ github.event.inputs.max_articles || 50 }}
+  DEDUP_WINDOW_MINUTES: 1440
+  MIN_CONFIDENCE: 0.6
+  MAX_CLUSTERS: 20
+  OUTPUT_DIR: blog/src/content/posts
+  OLLAMA_HOST: ${{ secrets.OLLAMA_HOST }}
+  OLLAMA_MODEL: llama3.1:8b
+  HF_API_TOKEN: ${{ secrets.HF_API_TOKEN }}
+  HF_MODEL: meta-llama/Meta-Llama-3.1-8B-Instruct
+  NEWSAPI_KEY: ${{ secrets.NEWSAPI_KEY }}
+  GNEWS_KEY: ${{ secrets.GNEWS_KEY }}
+  NITTER_INSTANCES: ${{ secrets.NITTER_INSTANCES }}
+  REQUEST_TIMEOUT: 30
+
+jobs:
+  collect:
+    name: Collect & Summarize
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: collector/constraints.txt
+
+      - name: Install collector dependencies
+        run: |
+          cd collector
+          pip install -e . --constraint=constraints.txt
+
+      - name: Run collection pipeline
+        run: |
+          cd collector
+          python -m src.pipeline --output ../blog/src/content/posts --once
+
+      - name: Generate search index
+        run: |
+          cd blog
+          node scripts/generate-search-index.mjs
+
+      - name: Commit and push new posts
+        run: |
+          git config user.name "enjoynews-bot"
+          git config user.email "bot@enjoynews.com.br"
+          git add blog/src/content/posts blog/src/content/cluster_index.json blog/public/search-index.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: new articles $(date -u +'%Y-%m-%d %H:%M')"
+            git push
+          else
+            echo "No new articles to publish"
+          fi
+
+  deploy-blog:
+    name: Deploy to Vercel
+    needs: collect
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: blog/package-lock.json
+
+      - name: Install blog dependencies
+        run: |
+          cd blog
+          npm ci
+
+      - name: Build blog
+        run: |
+          cd blog
+          npm run build
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: ./blog

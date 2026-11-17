@@ -1,0 +1,78 @@
+---
+import Layout from '../components/layout/Layout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+---
+
+<Layout
+  title="Política de Privacidade - EnjoyNews"
+  description="Como tratamos seus dados no EnjoyNews."
+>
+  <slot name="header">
+    <Header />
+  </slot>
+
+  <div class="container mx-auto px-4 py-8 lg:py-12 max-w-4xl">
+    <header class="mb-12 text-center">
+      <h1 class="font-display text-enjoy-ink text-3xl lg:text-4xl mb-4">Política de Privacidade</h1>
+      <p class="text-enjoy-inkLight text-lg">Última atualização: Janeiro de 2025</p>
+    </header>
+
+    <article class="prose-enjoy prose-enjoy-lg max-w-none">
+      <h2>1. Dados que Coletamos</h2>
+      <p>O EnjoyNews é um site estático de leitura. Não exigimos cadastro para acessar o conteúdo.</p>
+      <h3>Newsletter (opcional)</h3>
+      <p>Se você se inscrever na newsletter, coletamos apenas seu e-mail. Usamos para enviar o resumão diário.</p>
+      <h3>Analytics (opcional, futuro)</h3>
+      <p>Podemos adicionar analytics respeitadores de privacidade (Plausible, Umami) sem cookies nem dados pessoais.</p>
+
+      <h2>2. Como Usamos seus Dados</h2>
+      <ul>
+        <li>Enviar newsletter diária (se inscrito).</li>
+        <li>Responder a contatos via formulário/e-mail.</li>
+        <li>Melhorar o site (analytics agregados, anônimos).</li>
+      </ul>
+
+      <h2>3. Compartilhamento</h2>
+      <p><strong>Não vendemos, alugamos ou compartilhamos</strong> seus dados com terceiros para fins comerciais.</p>
+      <p>Provedores de serviço (e-mail, hospedagem) processam dados apenas sob nossas instruções e contratos de proteção de dados.</p>
+
+      <h2>4. Seus Direitos (LGPD)</h2>
+      <p>Você pode, a qualquer momento:</p>
+      <ul>
+        <li>Solicitar acesso aos seus dados.</li>
+        <li>Retificar dados incorretos.</li>
+        <li>Solicitar exclusão (direito ao esquecimento).</li>
+        <li>Revogar consentimento (descadastrar da newsletter).</li>
+        <li>Portabilidade dos dados.</li>
+      </ul>
+      <p>Entre em contato: <a href="mailto:privacidade@enjoynews.com.br" class="link">privacidade@enjoynews.com.br</a></p>
+
+      <h2>5. Retenção</h2>
+      <ul>
+        <li>E-mails da newsletter: enquanto a inscrição estiver ativa + 30 dias após cancelamento.</li>
+        <li>Logs de acesso (se houver): 30 dias, anonimizados.</li>
+      </ul>
+
+      <h2>6. Cookies</h2>
+      <p>O site não usa cookies de rastreamento, marketing ou analytics invasivos.</p>
+      <p>Podem existir cookies técnicos essenciais (ex: sessão de formulário, preferência de tema).</p>
+
+      <h2>7. Links Externos</h2>
+      <p>Nossos artigos linkam para fontes originais. Não controlamos as práticas de privacidade desses sites.</p>
+
+      <h2>8. Segurança</h2>
+      <p>HTTPS obrigatório. Cabeçalhos de segurança (CSP, HSTS, X-Frame-Options). Deploy em Vercel (SOC 2, ISO 27001).</p>
+
+      <h2>9. Alterações</h2>
+      <p>Esta política pode ser atualizada. Versões anteriores ficam disponíveis no GitHub.</p>
+
+      <h2>10. Contato</h2>
+      <p>Dúvidas: <a href="mailto:privacidade@enjoynews.com.br" class="link">privacidade@enjoynews.com.br</a></p>
+    </article>
+  </div>
+
+  <slot name="footer">
+    <Footer />
+  </slot>
+</Layout>

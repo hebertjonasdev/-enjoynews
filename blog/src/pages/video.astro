@@ -1,0 +1,75 @@
+---
+import Layout from '../components/layout/Layout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import VideoPlayer from '../components/video/VideoPlayer.astro';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+---
+
+<Layout
+  title="Resumão em Vídeo - EnjoyNews"
+  description="Assista ao resumão diário das principais notícias em 40 segundos. YouTube Shorts e TikTok."
+>
+  <slot name="header">
+    <Header />
+  </slot>
+
+  <div class="container mx-auto px-4 py-8 lg:py-12">
+    <header class="mb-10 text-center">
+      <h1 class="font-display text-enjoy-ink text-3xl lg:text-4xl mb-4">Resumão Diário em Vídeo</h1>
+      <p class="text-enjoy-inkLight text-lg max-w-2xl mx-auto">
+        As principais notícias do dia em 40 segundos. Publicado todas as manhãs às 08h.
+        Disponível no YouTube Shorts e TikTok.
+      </p>
+    </header>
+
+    <!-- Latest Video -->
+    <section aria-labelledby="latest-video" class="mb-12">
+      <h2 id="latest-video" class="font-display text-enjoy-ink text-2xl mb-6">Última Edição</h2>
+      <div class="max-w-lg mx-auto">
+        <VideoPlayer
+          videoId="dQw4w9WgXcQ"
+          platform="youtube"
+          title="Resumão EnjoyNews - Principais notícias de hoje"
+        />
+        <div class="mt-4 text-center">
+          <p class="text-enjoy-inkMuted text-sm mb-4">
+            Publicado em {format(new Date(), "EEEE, d 'de' MMMM 'de' yyyy", { locale: ptBR })}
+          </p>
+          <div class="flex justify-center gap-4">
+            <a href="https://youtube.com/@enjoynews" target="_blank" rel="noopener" class="btn-primary">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 7.674 0 12 0 12s0 4.326.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 16.326 24 12 24 12s0-4.326-.502-5.814zM9.545 15.568V8.432L15.818 12 9.545 15.568z"/></svg>
+              Canal no YouTube
+            </a>
+            <a href="https://tiktok.com/@enjoynews" target="_blank" rel="noopener" class="btn-secondary">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.545 11.261v6.284c0 .61.784.902 1.169.63l4.688-3.635c.455-.354.455-1.072 0-1.426L13.714 10.63c-.384-.271-1.169.021-1.169.631zm-3.456-2.144c0 3.012 2.627 4.867 5.003 4.973V7.158c-2.376-.106-5.003 1.749-5.003 4.959zm9.544-.719c-.08-4.127-3.873-6.932-7.485-6.644v14.68c3.774-.279 7.168-2.956 7.485-6.843v-1.193z"/></svg>
+              Perfil no TikTok
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Video Archive -->
+    <section aria-labelledby="archive-title">
+      <h2 id="archive-title" class="font-display text-enjoy-ink text-2xl mb-6">Edições Anteriores</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Would be populated from video metadata JSON */}
+        {Array.from({ length: 6 }).map((_, i) => (
+          <article key={i} class="card p-4">
+            <div class="aspect-[9/16] bg-enjoy-ink rounded-lg mb-3 relative flex items-center justify-center">
+              <svg class="w-10 h-10 text-enjoy-brownLight" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+            <h3 class="font-medium text-enjoy-ink mb-1">Resumão EnjoyNews - {(new Date(Date.now() - i * 86400000)).toLocaleDateString('pt-BR')}</h3>
+            <p class="text-enjoy-inkMuted text-sm">08:00 • 40s • YouTube + TikTok</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <slot name="footer">
+    <Footer />
+  </slot>
+</Layout>

@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-orange: #E86C00;
+    --color-beige: #F5F0E8;
+    --color-brown: #C4A484;
+    --color-ink: #1A1A1A;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-enjoy-beige text-enjoy-ink font-sans antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  ::selection {
+    @apply bg-enjoy-orange/30 text-enjoy-ink;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-enjoy-beige;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-enjoy-brown rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-enjoy-brownDark;
+  }
+}
+
+@layer components {
+  .prose-enjoy {
+    @apply prose prose-enjoy max-w-none;
+  }
+
+  .prose-enjoy-invert {
+    @apply prose prose-invert prose-enjoy max-w-none;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply btn bg-enjoy-orange text-white hover:bg-enjoy-orangeDark focus:ring-enjoy-orange;
+  }
+
+  .btn-secondary {
+    @apply btn bg-enjoy-brown text-white hover:bg-enjoy-brownDark focus:ring-enjoy-brown;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-enjoy-ink hover:bg-enjoy-beigeDark focus:ring-enjoy-ink;
+  }
+
+  .card {
+    @apply bg-enjoy-paper rounded-xl border border-enjoy-line overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5;
+  }
+
+  .card-interactive {
+    @apply card cursor-pointer;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-orange {
+    @apply badge bg-enjoy-orangePale text-enjoy-orangeDark;
+  }
+
+  .badge-brown {
+    @apply badge bg-enjoy-beigeDark text-enjoy-brownDark;
+  }
+
+  .badge-green {
+    @apply badge bg-green-50 text-green-700;
+  }
+
+  .input {
+    @apply w-full px-4 py-2.5 rounded-lg border border-enjoy-line bg-enjoy-paper text-enjoy-ink placeholder-enjoy-inkMuted focus:outline-none focus:ring-2 focus:ring-enjoy-orange focus:border-transparent transition-all;
+  }
+
+  .link {
+    @apply text-enjoy-orange font-medium underline-offset-2 hover:underline transition-colors;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .stagger-1 { animation-delay: 0.05s; }
+  .stagger-2 { animation-delay: 0.1s; }
+  .stagger-3 { animation-delay: 0.15s; }
+  .stagger-4 { animation-delay: 0.2s; }
+  .stagger-5 { animation-delay: 0.25s; }
+}
