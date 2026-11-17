@@ -1,4 +1,4 @@
-"""LLM Client - supports Ollama (local/remote) and Hugging Face Inference API."""
+"""LLM Client - supports Groq (free, fast), Ollama (local/remote), Hugging Face Inference API."""
 from __future__ import annotations
 
 import json
@@ -159,8 +159,128 @@ class HuggingFaceClient(LLMClient):
         await self.client.aclose()
 
 
+class GroqClient(LLMClient):
+    """Groq Cloud client - FREE tier: Llama 3.1 70B/8B, Mixtral, Gemma.
+
+    Free tier: 14,400 req/day, 30 RPM, 6000 TPM.
+    Ultra-fast LPU inference (~300 tokens/s).
+    Best free LLM option for production.
+    """
+
+    def __init__(self, api_key: str, model: str = "llama-3.1-70b-versatile", timeout: int = 60):
+        self.api_key = api_key
+        self.model = model
+        self.client = httpx.AsyncClient(
+            timeout=timeout,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+        )
+        self.api_url = "https://api.groq.com/openai/v1/chat/completions"
+
+    @retry(wait=wait_exponential(multiplier=1, min=2, max=30), stop=stop_after_attempt(3))
+    async def generate(self, system: str, user: str, temperature: float = 0.2, max_tokens: int = 1500) -> LLMResponse:
+        payload = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": system},
+                {"role": "user", "content": user},
+            ],
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "top_p": 0.9,
+            "stream": False,
+        }
+        resp = await self.client.post(self.api_url, json=payload)
+        resp.raise_for_status()
+        data = resp.json()
+
+        content = data.get("choices", [{}])[0].get("message", {}).get("content", "")
+        usage = data.get("usage")
+        return LLMResponse(content=content, model=self.model, usage=usage)
+
+    async def health_check(self) -> bool:
+        try:
+            resp = await self.client.get("https://api.groq.com/openai/v1/models")
+            return resp.status_code == 200
+        except Exception:
+            return False
+
+    async def close(self):
+        await self.client.aclose()
+
+
+class TogetherAIClient(LLMClient):
+    """Together AI client - Free $1 credit (~10M tokens).
+
+    Models: Llama 3.1 405B/70B/8B, Qwen 2.5, Mixtral, etc.
+    """
+
+    def __init__(self, api_key: str, model: str = "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo", timeout: int = 120):
+        self.api_key = api_key
+        self.model = model
+        self.client = httpx.AsyncClient(
+            timeout=timeout,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+        )
+        self.api_url = "https://api.together.xyz/v1/chat/completions"
+
+    @retry(wait=wait_exponential(multiplier=1, min=2, max=30), stop=stop_after_attempt(3))
+    async def generate(self, system: str, user: str, temperature: float = 0.2, max_tokens: int = 1500) -> LLMResponse:
+        payload = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": system},
+                {"role": "user", "content": user},
+            ],
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "top_p": 0.9,
+            "stream": False,
+        }
+        resp = await self.client.post(self.api_url, json=payload)
+        resp.raise_for_status()
+        data = resp.json()
+
+        content = data.get("choices", [{}])[0].get("message", {}).get("content", "")
+        usage = data.get("usage")
+        return LLMResponse(content=content, model=self.model, usage=usage)
+
+    async def health_check(self) -> bool:
+        try:
+            resp = await self.client.get("https://api.together.xyz/v1/models")
+            return resp.status_code == 200
+        except Exception:
+            return False
+
+    async def close(self):
+        await self.client.aclose()
+
+
 def create_llm_client(config: PipelineConfig) -> LLMClient:
-    """Factory to create appropriate LLM client based on config."""
+    """Factory to create appropriate LLM client based on config.
+
+    Priority order (best free options first):
+    1. Groq (free, fastest, best quality) - GROQ_API_KEY
+    2. Together AI (free $1 credit) - TOGETHER_API_KEY
+    3. Hugging Face Inference (free 30k req/mo) - HF_API_TOKEN
+    4. Ollama (local/remote) - OLLAMA_HOST
+    """
+    # 1. Groq - BEST free option
+    if config.groq_api_key:
+        return GroqClient(config.groq_api_key, config.groq_model)
+
+    # 2. Together AI - Good free credit
+    if config.together_api_key:
+        return TogetherAIClient(config.together_api_key, config.together_model)
+
+    # 3. Hugging Face Inference API
     if config.hf_api_token:
         return HuggingFaceClient(config.hf_api_token, config.hf_model)
+
+    # 4. Ollama (local or remote)
     return OllamaClient(config.ollama_host, config.ollama_model)

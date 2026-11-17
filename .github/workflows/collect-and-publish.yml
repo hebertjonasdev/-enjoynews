@@ -22,12 +22,30 @@ env:
   MIN_CONFIDENCE: 0.6
   MAX_CLUSTERS: 20
   OUTPUT_DIR: blog/src/content/posts
-  OLLAMA_HOST: ${{ secrets.OLLAMA_HOST }}
-  OLLAMA_MODEL: llama3.1:8b
+  # LLM Providers (priority order)
+  GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+  GROQ_MODEL: llama-3.1-70b-versatile
+  TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+  TOGETHER_MODEL: meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo
   HF_API_TOKEN: ${{ secrets.HF_API_TOKEN }}
   HF_MODEL: meta-llama/Meta-Llama-3.1-8B-Instruct
+  OLLAMA_HOST: ${{ secrets.OLLAMA_HOST }}
+  OLLAMA_MODEL: llama3.1:8b
+  # News APIs
   NEWSAPI_KEY: ${{ secrets.NEWSAPI_KEY }}
   GNEWS_KEY: ${{ secrets.GNEWS_KEY }}
+  CURRENTS_KEY: ${{ secrets.CURRENTS_KEY }}
+  MEDIASTACK_KEY: ${{ secrets.MEDIASTACK_KEY }}
+  WORLDNEWS_KEY: ${{ secrets.WORLDNEWS_KEY }}
+  GUARDIAN_KEY: ${{ secrets.GUARDIAN_KEY }}
+  # Enrichment APIs
+  BRASIL_API_KEY: ${{ secrets.BRASIL_API_KEY }}
+  WORLDBANK_KEY: ${{ secrets.WORLDBANK_KEY }}
+  ALPHAVANTAGE_KEY: ${{ secrets.ALPHAVANTAGE_KEY }}
+  COINGECKO_KEY: ${{ secrets.COINGECKO_KEY }}
+  OPENWEATHER_KEY: ${{ secrets.OPENWEATHER_KEY }}
+  RESTCOUNTRIES_KEY: ${{ secrets.RESTCOUNTRIES_KEY }}
+  # Social
   NITTER_INSTANCES: ${{ secrets.NITTER_INSTANCES }}
   REQUEST_TIMEOUT: 30
 

@@ -31,12 +31,17 @@ from .sources import (
     get_enabled_sources,
     fetch_newsapi_articles,
     fetch_gnews_articles,
+    fetch_currents_articles,
+    fetch_mediastack_articles,
+    fetch_worldnews_articles,
+    fetch_guardian_articles,
     fetch_nitter_articles,
     fetch_sitemap_articles,
     SITEMAP_SOURCES,
 )
 from .llm_client import create_llm_client
 from .prompts import validate_summary_json
+from .enrichment import enrich_articles, EnrichmentConfig
 
 console = Console()
 
@@ -54,6 +59,16 @@ class CollectorPipeline:
         self.embedder = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
         self.output_dir = Path(config.output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Enrichment config
+        self.enrichment_config = EnrichmentConfig(
+            brasil_api_key=config.brasil_api_key,
+            worldbank_key=config.worldbank_key,
+            alphavantage_key=config.alphavantage_key,
+            coingecko_key=config.coingecko_key,
+            openweather_key=config.openweather_key,
+            restcountries_key=config.restcountries_key,
+        )
 
         # Load existing articles for dedup
         self.existing_hashes: set[str] = set()
@@ -103,6 +118,34 @@ class CollectorPipeline:
         if self.config.gnews_key:
             console.print("  [dim]GNews: enabled[/dim]")
             tasks.append(fetch_gnews_articles(self.config.gnews_key))
+        else:
+            tasks.append(asyncio.sleep(0, result=[]))
+
+        # Currents API
+        if self.config.currents_key:
+            console.print("  [dim]Currents API: enabled[/dim]")
+            tasks.append(fetch_currents_articles(self.config.currents_key))
+        else:
+            tasks.append(asyncio.sleep(0, result=[]))
+
+        # MediaStack
+        if self.config.mediastack_key:
+            console.print("  [dim]MediaStack: enabled[/dim]")
+            tasks.append(fetch_mediastack_articles(self.config.mediastack_key))
+        else:
+            tasks.append(asyncio.sleep(0, result=[]))
+
+        # World News API
+        if self.config.worldnews_key:
+            console.print("  [dim]World News API: enabled[/dim]")
+            tasks.append(fetch_worldnews_articles(self.config.worldnews_key))
+        else:
+            tasks.append(asyncio.sleep(0, result=[]))
+
+        # The Guardian
+        if self.config.guardian_key:
+            console.print("  [dim]The Guardian API: enabled[/dim]")
+            tasks.append(fetch_guardian_articles(self.config.guardian_key))
         else:
             tasks.append(asyncio.sleep(0, result=[]))
 
@@ -383,6 +426,10 @@ class CollectorPipeline:
             console.print("[yellow]No articles passed summarization[/yellow]")
             return 0
 
+        # Enrich with contextual data
+        console.print("[bold cyan]Enriching articles with contextual data...[/bold cyan]")
+        processed = await enrich_articles(processed, self.enrichment_config, self.http_client)
+
         # Cluster
         clusters = self.cluster_articles(processed)
 
@@ -424,13 +471,32 @@ def load_config_from_env() -> PipelineConfig:
         min_confidence=float(os.getenv("MIN_CONFIDENCE", "0.6")),
         max_clusters=int(os.getenv("MAX_CLUSTERS", "20")),
         output_dir=os.getenv("OUTPUT_DIR", "output/posts"),
-        ollama_host=os.getenv("OLLAMA_HOST", "http://localhost:11434"),
-        ollama_model=os.getenv("OLLAMA_MODEL", "llama3.1:8b"),
+        # LLM Providers
+        groq_api_key=os.getenv("GROQ_API_KEY"),
+        groq_model=os.getenv("GROQ_MODEL", "llama-3.1-70b-versatile"),
+        together_api_key=os.getenv("TOGETHER_API_KEY"),
+        together_model=os.getenv("TOGETHER_MODEL", "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"),
         hf_api_token=os.getenv("HF_API_TOKEN"),
         hf_model=os.getenv("HF_MODEL", "meta-llama/Meta-Llama-3.1-8B-Instruct"),
+        ollama_host=os.getenv("OLLAMA_HOST", "http://localhost:11434"),
+        ollama_model=os.getenv("OLLAMA_MODEL", "llama3.1:8b"),
+        # News APIs
         newsapi_key=os.getenv("NEWSAPI_KEY"),
         gnews_key=os.getenv("GNEWS_KEY"),
+        currents_key=os.getenv("CURRENTS_KEY"),
+        mediastack_key=os.getenv("MEDIASTACK_KEY"),
+        worldnews_key=os.getenv("WORLDNEWS_KEY"),
+        guardian_key=os.getenv("GUARDIAN_KEY"),
+        # Enrichment APIs
+        brasil_api_key=os.getenv("BRASIL_API_KEY"),
+        worldbank_key=os.getenv("WORLDBANK_KEY"),
+        alphavantage_key=os.getenv("ALPHAVANTAGE_KEY"),
+        coingecko_key=os.getenv("COINGECKO_KEY"),
+        openweather_key=os.getenv("OPENWEATHER_KEY"),
+        restcountries_key=os.getenv("RESTCOUNTRIES_KEY"),
+        # Social
         nitter_instances=os.getenv("NITTER_INSTANCES", "").split(",") if os.getenv("NITTER_INSTANCES") else [],
+        # General
         request_timeout=int(os.getenv("REQUEST_TIMEOUT", "30")),
     )
 

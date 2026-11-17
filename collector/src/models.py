@@ -142,12 +142,31 @@ class PipelineConfig(BaseModel):
     min_confidence: float = 0.6
     max_clusters: int = 20
     output_dir: str = "output/posts"
-    ollama_host: str = "http://localhost:11434"
-    ollama_model: str = "llama3.1:8b"
+    # LLM Providers (priority order)
+    groq_api_key: str | None = None
+    groq_model: str = "llama-3.1-70b-versatile"
+    together_api_key: str | None = None
+    together_model: str = "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"
     hf_api_token: str | None = None
     hf_model: str = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+    ollama_host: str = "http://localhost:11434"
+    ollama_model: str = "llama3.1:8b"
+    # News APIs
     newsapi_key: str | None = None
     gnews_key: str | None = None
+    currents_key: str | None = None
+    mediastack_key: str | None = None
+    worldnews_key: str | None = None
+    guardian_key: str | None = None
+    # Social / Other
     nitter_instances: list[str] = Field(default_factory=list)
+    # Enrichment APIs
+    brasil_api_key: str | None = None
+    worldbank_key: str | None = None
+    alphavantage_key: str | None = None
+    coingecko_key: str | None = None
+    openweather_key: str | None = None
+    restcountries_key: str | None = None
+    # General
     request_timeout: int = 30
     user_agent: str = "EnjoyNewsBot/0.1 (+https://enjoynews.com.br/bot)"
